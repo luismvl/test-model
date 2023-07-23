@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -17,3 +18,29 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+
+
+class Product(db.Model):
+    __tablename__ = 'products'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    sizes_quantity = db.relationship(
+        'Size', secondary='product_sizes_quantity', backref='product', lazy=True)
+
+
+class Size(db.Model):
+    __tablename__ = 'sizes'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+
+
+product_sizes_quantity = db.Table('product_sizes_quantity',
+                                  db.Column('product_id', db.Integer,
+                                            db.ForeignKey('products.id'), ),
+                                  db.Column('size_id', db.Integer,
+                                            db.ForeignKey('sizes.id')),
+                                  db.Column('quantity', db.Integer,
+                                            nullable=False, default=0),
+                                  db.UniqueConstraint(
+                                      'product_id', 'size_id', name='product_sizes_quantity_unique')
+                                  )
