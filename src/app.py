@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Product
+from models import db, User, Product, Size, ProductSizesQuantity
 # from models import Person
 
 app = Flask(__name__)
@@ -52,14 +52,29 @@ def handle_hello():
     return jsonify(response_body), 200
 
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+@app.route('/products', methods=['GET'])
+def get_products():
+    products = Product.query.all()
+    size = Size.query.get(1)
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+    # Crear la relación con size
+    # rel = ProductSizesQuantity(size=size, product=products[0], quantity=12)
+    # db.session.add(rel)
+    # db.session.commit()
 
-    return jsonify(response_body), 200
+    # Para updatear:
+    # rel = ProductSizesQuantity.query.filter_by(size=size, product=products[0]).first()
+    # rel.quantity = 43
+    # db.session.commit()
+    serialized_products = list(map(lambda x: x.serialize(), products))
+    return serialized_products, 200
+
+    
+@app.route('/sizes', methods=['GET'])
+def get_sizes():
+    sizes = Size.query.all()
+    serialized_sizes = list(map(lambda x: x.serialize(), sizes))
+    return serialized_sizes, 200
 
 
 # this only runs if `$ python src/app.py` is executed
