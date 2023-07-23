@@ -17,10 +17,11 @@ class User(db.Model):
             "id": self.id,
             "email": self.email,
         }
+
 class ProductSizesQuantity(db.Model):
     __tablename__= 'product_sizes_quantity'
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
-    size_id = db.Column(db.Integer, db.ForeignKey('sizes.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)
+    size_id = db.Column(db.Integer, db.ForeignKey('sizes.id'), primary_key=True)
     quantity = db.Column(db.Integer, nullable=False, default=0)
 
     __table_args__ = (db.UniqueConstraint('product_id', 'size_id', name='product_size_unique'),)
